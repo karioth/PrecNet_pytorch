@@ -7,27 +7,18 @@ class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
     """
-    def __init__(self, input_size, hidden_size, kernel_size=3, padding='same'):
+
+    def __init__(self, input_size, hidden_size):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
-        self.Gates = nn.Conv2d(input_size + hidden_size, 4 * hidden_size, kernel_size=kernel_size, padding=padding)
+        self.Gates = nn.Conv2d(input_size + hidden_size, 4 * hidden_size, 3, padding='same')
 
     def forward(self, input_, prev_state):
-      
-        # get batch and spatial sizes
-        batch_size = input_.data.size()[0]
-        spatial_size = input_.data.size()[2:]
-
-        # generate empty prev_state, if None is provided
-        if prev_state is None:
-            state_size = [batch_size, self.hidden_size] + list(spatial_size)
-            prev_state = (
-                Variable(torch.zeros(state_size)),
-                Variable(torch.zeros(state_size))
-            )
-
         prev_hidden, prev_cell = prev_state
+        
+        if prev_hidden.is_cuda == False  and torch.cuda.is_available():
+           prev_hidden = prev_hidden.cuda()
 
         # data size is [batch, channel, height, width]
         stacked_inputs = torch.cat((input_, prev_hidden), 1)
@@ -43,6 +34,9 @@ class ConvLSTMCell(nn.Module):
 
         # apply tanh non linearity
         cell_gate = f.tanh(cell_gate)
+
+        if prev_cell.is_cuda == False and torch.cuda.is_available():
+           prev_cell = prev_cell.cuda()
 
         # compute current cell and hidden state
         cell = (remember_gate * prev_cell) + (in_gate * cell_gate)
