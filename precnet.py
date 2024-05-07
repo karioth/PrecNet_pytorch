@@ -14,12 +14,19 @@ class PrecNetModel(nn.Module):
         error_units = []
         pred_units = []
         ahat_units = []
-        for i, channels in enumerate([(6,120),(120,240),(None, 240)]):
-            in_channels = channels
-
+        
+        for i in range(self.num_of_layers):
+            if i == self.num_of_layers - 1:  # Top layer
+                in_channels = (None, self.r_hidden_sizes[i])
+            else:
+                in_channels = (self.hidden_sizes[i] * 2, self.hidden_sizes[i+1] * 2)
+    
+        # for i, channels in enumerate([(6,120),(120,240),(None, 240)]):
+        #     in_channels = channels
             pred_units.append(PredictionCell(in_channels, r_hidden_sizes[i]))
             ahat_units.append(nn.Conv2d(r_hidden_sizes[i], hidden_sizes[i], kernel_size=3, padding='same'))
             error_units.append(ErrorCell())
+
 
         self.error_units = nn.ModuleList(error_units)
         self.pred_units = nn.ModuleList(pred_units)
