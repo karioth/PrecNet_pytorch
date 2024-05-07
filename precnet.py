@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as f
 from torch.autograd import Variable
-from precnet_cells import *
+from .precnet_cells import ErrorCell, PredictionCell
 
 class PrecNetModel(nn.Module):
   def __init__(self, hidden_sizes, r_hidden_sizes):
