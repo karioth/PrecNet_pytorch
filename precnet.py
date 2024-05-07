@@ -17,7 +17,7 @@ class PrecNetModel(nn.Module):
         
         for i in range(self.num_of_layers):
             if i == self.num_of_layers - 1:  # Top layer
-                in_channels = (None, self.r_hidden_sizes[i])
+                in_channels = (None, self.hidden_sizes[i] * 2)
             else:
                 in_channels = (self.hidden_sizes[i] * 2, self.hidden_sizes[i+1] * 2)
     
