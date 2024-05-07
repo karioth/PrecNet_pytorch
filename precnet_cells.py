@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as f
 from torch.autograd import Variable
-from convlstm import ConvLSTMCell
+from .convlstm import ConvLSTMCell
 
 class ErrorCell(nn.Module):
   '''Single Error Cell'''
