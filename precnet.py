@@ -20,9 +20,7 @@ class PrecNetModel(nn.Module):
                 in_channels = (None, self.hidden_sizes[i] * 2)
             else:
                 in_channels = (self.hidden_sizes[i] * 2, self.hidden_sizes[i+1] * 2)
-    
-        # for i, channels in enumerate([(6,120),(120,240),(None, 240)]):
-        #     in_channels = channels
+              
             pred_units.append(PredictionCell(in_channels, r_hidden_sizes[i]))
             ahat_units.append(nn.Conv2d(r_hidden_sizes[i], hidden_sizes[i], kernel_size=3, padding='same'))
             error_units.append(ErrorCell())
