@@ -95,7 +95,7 @@ class PrecNetModel(nn.Module):
 
     return (r_states, c_states, errors)
 
-  def train_step(self, seq, optimizer, loss_fn):
+  def train_step(self, seq, optimizer, loss_fn, layer_loss_weights):
       optimizer.zero_grad()
       seq = seq.permute(0, 1, 4, 2, 3)
       input = Variable(seq.cuda())
@@ -116,7 +116,7 @@ class PrecNetModel(nn.Module):
 
       return loss
 
-  def test_step(self, seq, loss_fn):
+  def test_step(self, seq, loss_fn, layer_loss_weights):
       seq = seq.permute(0, 1, 4, 2, 3)
       input = Variable(seq.cuda())
       time_steps = input.size(1)
