@@ -6,32 +6,6 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torch.optim.lr_scheduler import StepLR
 
-
-num_epochs = 30
-lr = 0.001
-nt = 10 # num of time steps
-batch_size = 8
-layer_loss_weights = Variable(torch.FloatTensor([[1.], [0.], [0.]]).cuda())
-
-train_file = os.path.join(DATA_DIR, 'X_train.hkl')
-train_sources = os.path.join(DATA_DIR, 'sources_train.hkl')
-val_file = os.path.join(DATA_DIR, 'X_val.hkl')
-val_sources = os.path.join(DATA_DIR, 'sources_val.hkl')
-
-kitti_train = KITTI(train_file, train_sources, nt)
-kitti_val = KITTI(val_file, val_sources, nt)
-
-train_loader = DataLoader(kitti_train, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(kitti_val, batch_size=batch_size, shuffle=False)
-
-stack1=60
-stack2=120
-R_stack3=240
-hidden_sizes = (3, stack1, stack2)
-r_hidden_sizes = (stack1, stack2, R_stack3)
-
-precnet = PrecNetModel(hidden_sizes,r_hidden_sizes)
-
 def train_one_epoch(model, data_loader, optimizer, loss_fn):
   running_loss = 0.0
   pbar = tqdm(data_loader, position = 0, leave= True)
