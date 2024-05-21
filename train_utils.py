@@ -1,4 +1,6 @@
 import os
+import h5py
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -44,3 +46,19 @@ def train_prec(model, num_epochs, train_loader, val_loader, layer_loss_weights):
         scheduler.step()
         current_lr = optimizer.param_groups[0]['lr']
         print(f'Epoch {epoch + 1}/{num_epochs} - loss: {train_loss:.4f} - val_loss: {val_loss:.4f} - lr: {current_lr}')
+
+def get_activations(model, data, save_file):
+    # Create an HDF5 file to store activations for all sequences
+    with h5py.File(save_file, 'w') as hf:
+        with torch.no_grad():
+            for i, seq in enumerate(data):
+                layer_activations = model.predict(seq, save_act=True)
+                # Create a group for the current sequence
+                seq_group = hf.create_group(f'sequence_{i}')
+
+                for layer in range(model.num_of_layers):
+                    layer_group = seq_group.create_group(f'layer_{layer}')
+                    for act_type in ['error_down', 'r_down', 'c_down', 'ahat', 'error_up', 'r_up', 'c_up']:
+                        if act_type in layer_activations[layer] and layer_activations[layer][act_type]:
+                            activations = np.stack(layer_activations[layer][act_type], axis=0)
+                            layer_group.create_dataset(act_type, data=activations)
