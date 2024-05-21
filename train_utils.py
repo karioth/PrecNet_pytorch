@@ -39,7 +39,7 @@ def train_prec(model, num_epochs, train_loader, val_loader, layer_loss_weights):
 
     for epoch in range(0, num_epochs):
         train_loss = train_one_epoch(model, train_loader, optimizer, loss_fn, layer_loss_weights)
-        val_loss = val_one_epoch(model, train_loader, loss_fn, layer_loss_weights)
+        val_loss = val_one_epoch(model, val_loader, loss_fn, layer_loss_weights)
 
         scheduler.step()
         current_lr = optimizer.param_groups[0]['lr']
