@@ -34,7 +34,7 @@ def train_prec(model, num_epochs, train_loader, val_loader, layer_loss_weights):
     if torch.cuda.is_available():
       print('Using GPU.')
       model.cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr = initial_lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr = initial_lr, amsgrad =True)
     scheduler = StepLR(optimizer, step_size=lr_decay_epoch, gamma=0.1)
     loss_fn = nn.L1Loss()
     print('Run for', num_epochs, 'epochs')
