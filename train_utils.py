@@ -28,14 +28,14 @@ def val_one_epoch(model, data_loader, loss_fn, layer_loss_weights):
 
   return running_loss/len(data_loader)
 
-def train_prec(model, num_epochs, train_loader, val_loader, layer_loss_weights, optimizer, scheduler):
+def train_prec(model, num_epochs, train_loader, val_loader, layer_loss_weights):
     lr_decay_epoch = num_epochs // 2
     initial_lr = 0.001
     if torch.cuda.is_available():
       print('Using GPU.')
       model.cuda()
-    # optimizer = torch.optim.Adam(model.parameters(), lr = initial_lr)
-    # scheduler = StepLR(optimizer, step_size=lr_decay_epoch, gamma=0.1)
+    optimizer = torch.optim.Adam(model.parameters(), lr = initial_lr)
+    scheduler = StepLR(optimizer, step_size=lr_decay_epoch, gamma=0.1)
     loss_fn = nn.L1Loss()
     print('Run for', num_epochs, 'epochs')
 
