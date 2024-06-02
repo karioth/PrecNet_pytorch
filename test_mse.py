@@ -1,20 +1,6 @@
-import os
-import torch
-import torch.nn as nn
-from torch.autograd import Variable
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-from torch.optim.lr_scheduler import StepLR
+import numpy as np
 
-test_file = os.path.join(DATA_DIR, 'X_test.hkl')
-test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
-test_dataset = KITTI(test_file, test_sources, nt)
-test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-def test(model, test_dataloader):
-    if torch.cuda.is_available():
-      print('Using GPU.')
-      model.cuda()
+def test_mse(model, test_dataloader):
     X_test = []
     X_hat = []
     with torch.no_grad():
@@ -27,11 +13,31 @@ def test(model, test_dataloader):
 
     X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
 
-    # Calculate MSE of PredNet predictions
-    mse_model = np.mean((X_test[:, 1:] - X_hat[:, 1:]) ** 2)  # look at all timesteps except the first
+    # Calculate MSE between test data and predictions, excluding the first frame
+    mse_model = np.mean((X_test[:, 1:] - X_hat[:, 1:]) ** 2)
     mse_prev = np.mean((X_test[:, :-1] - X_test[:, 1:]) ** 2)
 
+    # Calculate MSE for random frame selection baseline, excluding the first frame
+    random_indices = np.random.randint(1, X_test.shape[1], size=(X_test.shape[0], X_test.shape[1] - 1))
+    X_random = X_test[np.arange(X_test.shape[0])[:, np.newaxis], random_indices]
+    mse_random = np.mean((X_test[:, 1:] - X_random) ** 2)
 
-    print(f"Model MSE: {mse_model:.5f}")
-    print(f"Previous Frame MSE: {mse_prev:.5f}")
+    # Calculate MSE for average pixel value comparison baseline, excluding the first frame
+    avg_pixel_value = np.mean(X_test[:, 1:], axis=(2, 3))
+    X_avg_pixel = np.repeat(avg_pixel_value[:, :, np.newaxis, np.newaxis], X_test.shape[2], axis=2)
+    X_avg_pixel = np.repeat(X_avg_pixel, X_test.shape[3], axis=3)
+    mse_avg_pixel = np.mean((X_test[:, 1:] - X_avg_pixel) ** 2)
+
+    # Calculate MSE for average pixel value of the entire sequence baseline, excluding the first frame
+    avg_pixel_value_sequence = np.mean(X_test, axis=(1, 2, 3))
+    X_avg_pixel_sequence = np.repeat(avg_pixel_value_sequence[:, np.newaxis, np.newaxis, np.newaxis], X_test.shape[1] - 1, axis=1)
+    X_avg_pixel_sequence = np.repeat(X_avg_pixel_sequence, X_test.shape[2], axis=2)
+    X_avg_pixel_sequence = np.repeat(X_avg_pixel_sequence, X_test.shape[3], axis=3)
+    mse_avg_pixel_sequence = np.mean((X_test[:, 1:] - X_avg_pixel_sequence) ** 2)
+
+    print("Previous fixation MSE: %f" % mse_prev)
+    print("Model MSE: %f" % mse_model)
+    print("Random Frame Selection MSE (excluding first frame): %f" % mse_random)
+    print("Average Pixel Value (of target): %f" % mse_avg_pixel)
+    print("Average Pixel Value (of entire sequence): %f" % mse_avg_pixel_sequence)
 
