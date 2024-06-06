@@ -50,6 +50,10 @@ class PrecNetModel(nn.Module):
           #get new R's, C's
           if l == self.num_of_layers - 1:
               r_state, c_state = self.pred_units[l](errors[l], r_states[l], c_states[l]) #convlstm down
+              if not r_state.is_cuda:
+                  r_state = r_state.cuda()
+              if not r_states[l].is_cuda:
+                  r_states[l] = r_states[l].cuda()
               r_state += r_states[l]
           else:
               upsamp_error = f.interpolate(errors[l+1], scale_factor = 2)
