@@ -50,9 +50,11 @@ class PrecNetModel(nn.Module):
           #get new R's, C's
           if l == self.num_of_layers - 1:
               r_state, c_state = self.pred_units[l](errors[l], r_states[l], c_states[l]) #convlstm down
+              r_state += r_states[l]
           else:
               upsamp_error = f.interpolate(errors[l+1], scale_factor = 2)
               r_state, c_state = self.pred_units[l](upsamp_error, r_states[l], c_states[l])
+              r_state += r_states[l]
           #get new Ahats's
           ahat = self.ahat_units[l](r_state)
           #use to calculate errors:
@@ -89,6 +91,7 @@ class PrecNetModel(nn.Module):
 
           if l < self.num_of_layers - 1:
               r_state, c_state = self.pred_units[l](error, r_states[l], c_states[l], up=True) #convlstm up
+              r_state += r_states[l]
               r_states[l] = r_state
               c_states[l] = c_state
 
