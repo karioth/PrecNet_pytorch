@@ -54,6 +54,12 @@ class PrecNetModel(nn.Module):
           else:
               upsamp_error = f.interpolate(errors[l+1], scale_factor = 2)
               r_state, c_state = self.pred_units[l](upsamp_error, r_states[l], c_states[l])
+            
+              if not r_state.is_cuda:
+                  r_state = r_state.cuda()
+              if not r_states[l].is_cuda:
+                  r_states[l] = r_states[l].cuda()
+      
               r_state += r_states[l]
           #get new Ahats's
           ahat = self.ahat_units[l](r_state)
@@ -91,6 +97,12 @@ class PrecNetModel(nn.Module):
 
           if l < self.num_of_layers - 1:
               r_state, c_state = self.pred_units[l](error, r_states[l], c_states[l], up=True) #convlstm up
+              
+              if not r_state.is_cuda:
+                  r_state = r_state.cuda()
+              if not r_states[l].is_cuda:
+                  r_states[l] = r_states[l].cuda()
+                
               r_state += r_states[l]
               r_states[l] = r_state
               c_states[l] = c_state
