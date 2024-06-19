@@ -98,7 +98,6 @@ class PrecNetModel(nn.Module):
 
           if training:
               layer_error = torch.mean(torch.flatten(errors[l], start_dim=1), dim=1, keepdim=True)
-              print('layer',l, 'error', layer_error)
               all_error = layer_error if l == 0 else torch.cat((all_error, layer_error), dim=1)
               output = all_error
 
