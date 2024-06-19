@@ -10,14 +10,14 @@ class ErrorCell(nn.Module):
     super(ErrorCell,self).__init__()
     self.norm = nn.InstanceNorm2d(2*num_features, affine=False)
 
-  def forward(self, prediction, target):
+  def forward(self, prediction, target, norm=False):
         if torch.cuda.is_available() and prediction.is_cuda == False:
            prediction = prediction.cuda()
         if torch.cuda.is_available() and target.is_cuda == False:
            target = target.cuda()
-        error = self.norm(f.relu(torch.cat((target - prediction, prediction - target), 1)))
-        
-        
+        error = f.relu(torch.cat((target - prediction, prediction - target), 1))
+        if norm:
+          error = self.norm(error)
         return error
 
 class PredictionCell(nn.Module):
