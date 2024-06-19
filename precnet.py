@@ -23,7 +23,7 @@ class PrecNetModel(nn.Module):
             
           pred_units.append(PredictionCell(in_channels, r_hidden_sizes[i]))
           ahat_units.append(nn.Conv2d(r_hidden_sizes[i], hidden_sizes[i], kernel_size=3, padding='same'))
-          error_units.append(ErrorCell())
+          error_units.append(ErrorCell(hidden_sizes[i]))
 
 
       self.error_units = nn.ModuleList(error_units)
