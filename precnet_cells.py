@@ -16,15 +16,15 @@ class ErrorCell(nn.Module):
            target = target.cuda()
         errors = f.relu(torch.cat((target - prediction, prediction - target), 1))
 
-        mean_errors = errors.mean(dim=(0, 2, 3), keepdim=True)
-        variance_errors = ((errors - mean_errors) ** 2).mean(dim=(0, 2, 3), keepdim=True)
+        # mean_errors = errors.mean(dim=(0, 2, 3), keepdim=True)
+        # variance_errors = ((errors - mean_errors) ** 2).mean(dim=(0, 2, 3), keepdim=True)
 
-        epsilon = 1e-8
+        # epsilon = 1e-8
 
-        precision = 1 / (variance_errors + epsilon)
-        weighted_errors = errors * precision
+        # precision = 1 / (variance_errors + epsilon)
+        # weighted_errors = errors * precision
     
-        return weighted_errors
+        return errors
 
 class PredictionCell(nn.Module):
   '''Single PredictionCell'''
