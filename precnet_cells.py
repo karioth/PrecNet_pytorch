@@ -8,7 +8,7 @@ class ErrorCell(nn.Module):
   '''Single Error Cell'''
   def __init__(self, num_features):
     super(ErrorCell,self).__init__()
-    self.norm = nn.InstanceNorm2d(2*num_features, affine=True)
+    self.norm = nn.InstanceNorm2d(2*num_features, affine=False)
 
   def forward(self, prediction, target):
         if torch.cuda.is_available() and prediction.is_cuda == False:
