@@ -137,6 +137,7 @@ class PrecNetModel(nn.Module):
         A = input[:,t]
         A = A.type(torch.cuda.FloatTensor)
         states, layer_errors = self(A, states, training=True)
+        print('errors', layer_errors)
         if t > 0: #ignore the first time_step
             weighted_errors = torch.mm(layer_errors, layer_loss_weights)
             target = torch.zeros_like(weighted_errors)
