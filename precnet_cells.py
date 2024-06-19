@@ -6,18 +6,15 @@ from .convlstm import ConvLSTMCell
 
 class ErrorCell(nn.Module):
   '''Single Error Cell'''
-  def __init__(self, num_features):
+  def __init__(self):
     super(ErrorCell,self).__init__()
-    self.norm = nn.InstanceNorm2d(2*num_features, affine=False)
 
-  def forward(self, prediction, target, norm=False):
+  def forward(self, prediction, target):
         if torch.cuda.is_available() and prediction.is_cuda == False:
            prediction = prediction.cuda()
         if torch.cuda.is_available() and target.is_cuda == False:
            target = target.cuda()
         error = f.relu(torch.cat((target - prediction, prediction - target), 1))
-        if norm:
-          error = self.norm(error)
         return error
 
 class PredictionCell(nn.Module):
