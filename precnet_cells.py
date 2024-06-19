@@ -15,6 +15,7 @@ class ErrorCell(nn.Module):
         if torch.cuda.is_available() and target.is_cuda == False:
            target = target.cuda()
         error = f.relu(torch.cat((target - prediction, prediction - target), 1))
+        error = f.layer_norm(error, error.shape)
         return error
 
 class PredictionCell(nn.Module):
